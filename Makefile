@@ -1,10 +1,19 @@
 name != jq -r .name config.json
 version != jq -r .version config.json
 
+BUILD := build/$(name)
+SOURCE := src/wordcount.c
+all: $(BUILD)
 
-all: build/$(name) 
-build/$(name): src/wordcount.c config.json
+$(BUILD): $(SOURCE) config.json
 	mkdir -p build
-	gcc src/wordcount.c -D'NAME="$(name)"' -D'VERSION="$(version)"' -o build/$(name)
+	gcc $(SOURCE) -D'NAME="$(name)"' -D'VERSION="$(version)"' -o $(BUILD)
+
+check: $(BUILD) $(wildcard test/*)
+	@for i in $(foreach file, $(basename $(wildcard test/*.txt)), "diff <(./$(BUILD) "$(file).txt") "$(file).expected""); do \
+		bash -c "$$i" || exit 1; \
+	done
+
+
 clean:
-	@rm -f build/$(name)
+	@rm -f $(BUILD) 
