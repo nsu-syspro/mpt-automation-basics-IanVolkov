@@ -15,7 +15,7 @@ $(BUILD): $(SOURCE) config.json
 
 check: $(TESTS)
 $(TESTS): $(BUILD)
-	@diff <(./$(BUILD) "$@.txt") "$@.expected" || exit 1
+	@diff <(./"$(BUILD)" "$@.txt") "$@.expected" || exit 1
 
 
 clean:
